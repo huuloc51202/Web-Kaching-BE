@@ -4,12 +4,12 @@ const JwtService = require('../services/JwtService')
 const createUser = async (req, res) => {
     
     try{
-        const {name, email, password, confirmPassword, phone } = req.body
+        const {name, phone, email, password, cfpassword } = req.body
         const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/
         const isCheckEmail = reg.test(email)
 
         // Kiểm tra đầu vào
-        if (!name || !email || !password || !confirmPassword || !phone ){
+        if (!name || !phone|| !email || !password || !cfpassword  ){
             return res.status(400).json({
                 status: 'ERR',
                 message: 'The input is required'
@@ -17,12 +17,12 @@ const createUser = async (req, res) => {
         }else if(!isCheckEmail){
             return res.status(400).json({
                 status: 'ERR',
-                message: 'Invalid email format'
+                message: 'Email không hợp lệ'
             })
-        }else if(password !== confirmPassword){
+        }else if(password !== cfpassword){
             return res.status(400).json({
                 status: 'ERR',
-                message: 'Password and confirm password do not match'
+                message: 'Mật khẩu và xác nhận mật khẩu không trùng khớp'
             })
         }
         
@@ -39,12 +39,12 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
     
     try{
-        const {name, email, password, confirmPassword, phone } = req.body
+        const {email, password} = req.body
         const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/
         const isCheckEmail = reg.test(email)
 
         // Kiểm tra đầu vào
-        if (!name || !email || !password || !confirmPassword || !phone ){
+        if (!email || !password ){
             return res.status(400).json({
                 status: 'ERR',
                 message: 'The input is required'
@@ -52,17 +52,20 @@ const loginUser = async (req, res) => {
         }else if(!isCheckEmail){
             return res.status(400).json({
                 status: 'ERR',
-                message: 'Invalid email format'
-            })
-        }else if(password !== confirmPassword){
-            return res.status(400).json({
-                status: 'ERR',
-                message: 'Password and confirm password do not match'
+                message: 'Email không hợp lệ'
             })
         }
         
         const response = await UserService.loginUser(req.body)
-        return res.status(200).json(response)
+        const { refresh_token, ...newReponse} = response
+        // console.log('response', response)
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: false,
+            samesite: 'strict'
+            
+        })
+        return res.status(200).json(newReponse)
     }catch (e){
 
         return res.status(500).json({
@@ -147,9 +150,8 @@ const getDetailsUser = async (req, res) => {
 }
 
 const refreshToken = async (req, res) => {
-    
     try{
-        const token = req.headers.token.split(' ')[1]
+        const token = req.cookies.refresh_token
         if (!token){
             return res.status(400).json({
                 status: 'ERR',
@@ -166,9 +168,25 @@ const refreshToken = async (req, res) => {
     }
 }
 
+const logoutUser = async (req, res) => {
+    try{
+        res.clearCookie('refresh_token')
+        return res.status(200).json({
+            status: 'ok',
+            message: 'Logout successfully'
+        })
+    }catch (e){
+
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
     createUser,
     loginUser,
+    logoutUser,
     updateUser,
     deleteUser,
     getAllUser,

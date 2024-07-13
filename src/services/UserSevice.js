@@ -11,8 +11,8 @@ const createUser = (newUser) => {
             })
             if (checkUser !== null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The email is already'
+                    status: 'ERR',
+                    message: 'Email đã tồn tại'
                 })
             }
             const hash = bcrypt.hashSync(password, 10)
@@ -38,23 +38,23 @@ const createUser = (newUser) => {
 
 const loginUser = (userLogin) => {
     return new Promise(async (resolve, reject) => {
-        const {name, email, password, confirmPassword, phone } = userLogin
+        const {email, password} = userLogin
         try{
             const checkUser = await User.findOne({
                 email: email
             })
             if (checkUser === null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The user is not defined'
+                    status: 'ERR',
+                    message: 'Người dùng không được xác định'
                 })
             }
             const comparePassword = bcrypt.compareSync(password, checkUser.password)
 
             if(!comparePassword){
                 resolve({
-                    status: 'OK',
-                    message: 'The password or user is incorrect'
+                    status: 'ERR',
+                    message: 'Mật khẩu hoặc người dùng không chính xác'
                 })
             }
             const access_token = await genneralAccessToken({
