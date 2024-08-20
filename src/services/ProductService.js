@@ -48,7 +48,7 @@ const updateProduct = (id, data) => {
                     message: 'The product is not defined'
                 })
             }else{
-                // Cập nhật thông tin người dùng
+                // Cập nhật san pham
                 const updateProduct = await Product.findByIdAndUpdate(id, data, { new: true})
                 resolve({
                     status: 'OK',
@@ -116,6 +116,23 @@ const deleteProduct = (id) => {
     })
 }
 
+const deleteManyProduct = (ids) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            // Xoá thông tin người dùng
+            await Product.deleteMany( {_id : ids})
+            resolve({
+                status: 'OK',
+                message: 'Delete Product success'
+            })
+
+            
+        }catch (e){
+            reject(e)
+        }
+    })
+}
+
 const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -164,5 +181,6 @@ module.exports = {
     updateProduct,
     getDetailsProduct,
     deleteProduct,
+    deleteManyProduct,
     getAllProduct
 }
