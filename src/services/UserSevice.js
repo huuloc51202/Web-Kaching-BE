@@ -138,7 +138,7 @@ const deleteManyUser = (ids) => {
     return new Promise(async (resolve, reject) => {
         try{
             // Xoá thông tin người dùng
-            await User.deleteMany({_ids : ids})
+            await User.deleteMany({ _id: { $in: ids } })
             resolve({
                 status: 'OK',
                 message: 'Delete user success'

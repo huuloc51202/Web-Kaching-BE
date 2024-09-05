@@ -3,7 +3,7 @@ const Product = require("../models/ProductModel")
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
        
-        const {name, image, type, price, countInStock, description } = newProduct
+        const {name, image,typeimage, type, price, countInStock, description } = newProduct
         try{
             const checkProduct = await Product.findOne({
                 name: name
@@ -16,7 +16,8 @@ const createProduct = (newProduct) => {
             }
             const createdProduct = await Product.create({
                 name, 
-                image, 
+                image,
+                typeimage, 
                 type, 
                 price,
                 countInStock, 
@@ -140,6 +141,7 @@ const getAllProduct = (limit, page, sort, filter) => {
             const options = {
                 limit: limit,
                 skip: page * limit,
+                sort: {}, // Khởi tạo object sort
             };
 
             // Xây dựng điều kiện lọc nếu có
@@ -151,7 +153,12 @@ const getAllProduct = (limit, page, sort, filter) => {
             // Xây dựng điều kiện sắp xếp nếu có
             if (sort) {
                 const [order, field] = sort;
-                options.sort = { [field]: order };
+                options.sort[field] = order;
+            }
+
+            // Thêm điều kiện sắp xếp theo `createdAt` để sản phẩm mới nhất lên đầu
+            if (!options.sort.createdAt) {
+                options.sort.createdAt = -1; // Sắp xếp theo createdAt giảm dần
             }
 
             // Lấy tổng số sản phẩm (có thể cần điều kiện lọc)
@@ -175,6 +182,23 @@ const getAllProduct = (limit, page, sort, filter) => {
 }
 
 
+const getAllType = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allType = await Product.distinct('type')
+
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: allType,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+
 
 module.exports = {
     createProduct,
@@ -182,5 +206,6 @@ module.exports = {
     getDetailsProduct,
     deleteProduct,
     deleteManyProduct,
-    getAllProduct
+    getAllProduct,
+    getAllType
 }

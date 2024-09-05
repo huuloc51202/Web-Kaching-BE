@@ -4,11 +4,11 @@ const JwtService = require('../services/JwtService')
 const createProduct = async (req, res) => {
     
     try{
-        const {name, image, type, price, countInStock, description } = req.body
+        const {name, image,typeimage, type, price, countInStock, description } = req.body
         
 
         // Kiểm tra đầu vào
-        if (!name || !image || !type || !price || !countInStock    ){
+        if (!name || !image || !typeimage || !type || !price || !countInStock    ){
             return res.status(400).json({
                 status: 'ERR',
                 message: 'The input is required'
@@ -90,7 +90,7 @@ const deleteProduct = async (req, res) => {
 const deleteMany = async (req, res) => {
     
     try{
-        const ids = req.body
+        const ids = req.body.ids
         if (!ids){
             return res.status(400).json({
                 status: 'ERR',
@@ -111,7 +111,21 @@ const getAllProduct = async (req, res) => {
     
     try{
         const {limit, page, sort, filter} = req.query
-        const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0, sort, filter)
+        // const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0, sort, filter)
+        const response = await ProductService.getAllProduct(limit ? Number(limit) : undefined, Number(page) || 0, sort, filter);
+        return res.status(200).json(response)
+    }catch (e){
+
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const getAllType = async (req, res) => {
+    
+    try{
+        const response = await ProductService.getAllType()
         return res.status(200).json(response)
     }catch (e){
 
@@ -129,6 +143,7 @@ module.exports = {
     getDetailsProduct,
     deleteProduct,
     deleteMany,
-    getAllProduct
+    getAllProduct,
+    getAllType
 }
     
