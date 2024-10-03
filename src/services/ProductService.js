@@ -20,7 +20,7 @@ const createProduct = (newProduct) => {
                 typeimage, 
                 type, 
                 price,
-                countInStock, 
+                countInStock: Number(countInStock), 
                 description
             })
             if (createdProduct){
