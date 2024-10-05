@@ -27,7 +27,7 @@ mongoose.connect(`${process.env.MONGO_DB}`)
         console.log('err')
     })
 
-app.listen(port, '0.0.0.0' ,()=> {
+app.listen(port, ()=> {
     console.log('Example app listening on port:' + port)
     
 })
