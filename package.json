@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --inspect src/index.js",
-    "build": "<lệnh build hiện tại> && ls dist"
+    "build": "your-build-command && ls -R"
   },
   "author": "",
   "license": "ISC",
