@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const OrderController = require('../controllers/OrderController')
-const {authUserMiddleWare, authMiddleWare } = require('middleware/authMiddleWare')
+const {authUserMiddleWare, authMiddleWare } = require('../middleware/authMiddleWare')
 
 router.post('/create' , OrderController.createOrder)
 router.get('/get-all-order/:id',authUserMiddleWare, OrderController.getAllOrderDetails)
